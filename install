@@ -1,0 +1,61 @@
+#!/bin/bash
+
+DIRECTORY="$(dirname "$(dirname "$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )")")"
+
+function error {
+echo -e "\\e[91m$1\\e[39m"
+exit 1
+}
+# function credits to @Botspot 's wor flasher script
+download_from_gdrive() { #Input: file UUID and filename
+[ -z "$1" ] && error "download_from_gdrive(): requires a Google Drive file UUID!\nFile UUID is the end of a sharable link: https://drive.google.com/uc?export=download&id=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+[ -z "$2" ] && error "download_from_gdrive(): requires specifying a filename to save to."
+
+local FILEUUID="$1"
+local FILENAME="$2"
+
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id='"$FILEUUID" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=$FILEUUID" -O "$2" && rm -rf /tmp/cookies.txt
+
+}
+
+
+echo "Installing Dependencies..."
+"${DIRECTORY}/pkg-install" "openjfx nautilus android-tools-adb android-tools-fastboot" "$(dirname "$0")" || exit 1
+
+echo "Starting Installation..."
+sleep 5
+echo "Checking Network..."
+wget_error=$(wget --spider github.com >/dev/null 1>&2)
+if [ "$?" ! = 0 ]; then
+error "Internet Connection failed! Please Connect to a network!!"
+fi
+
+echo "Downloading MiUnlockTool..."
+mkdir -p ~/MiUnlockTool
+download_from_gdrive 1U9Q1HNLqGEYXsnCVMtJRrmmbuMVtatKb ~/MiUnlockTool/UnlockTool.jar || error "Failed to download MiUnlockTool!"
+echo "Writing launch desktop file..."
+echo "[Desktop Entry]
+Name=Mi Unlock Tool
+GenericName=Unlock Tool
+Comment=Mi Unlock Tool helps you to unlock your Xiaomi Phone without risk or data loss.
+Exec=gksudo -k -u root java -jar ${HOME}/MiUnlockTool/UnlockTool.jar
+Icon=$(dirname "$0")/icon-64.png
+Terminal=false
+Type=Application
+Categories=System" > ~/.local/share/applications/MiUnlocktool.desktop
+
+echo "Writing Execution file..."
+sudo echo "#!/bin/bash
+if [ "$EUID" -ne 0 ]; then
+shell='sudo bash -c'
+else
+shell='bash -c'
+fi
+
+"$shell" java -jar bin/MiUnlockTool.jar "$@"
+ " >/usr/bin/unlocktool.sh
+sudo chmod +x /usr/bin/unlocktool.sh
+
+echo "Installation Finished without errors!"
+echo
+exit 0
