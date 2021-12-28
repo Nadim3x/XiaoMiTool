@@ -8,7 +8,7 @@ function error {
 }
 
 echo "Uninstalling Mi Tool..."
-rm -rf ~/.local/share/applications/MiUnlocktool.desktop ~/MiUnlockTool
+rm -rf ~/.local/share/applications/MiUnlocktool.desktop ~/XiaoMiToolV2
 echo "Do you wanna uninstall dependencies installed in install script?"
 echo -ne "Type in your answer [y/N]: "
 read ans
