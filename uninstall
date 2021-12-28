@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 DIRECTORY="$(dirname "$(dirname "$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )")")"
 
@@ -15,7 +15,7 @@ read ans
 if [ "$ans" == N ] || [ "$ans" == n ] || [ -z "$ans" ]; then
 exit 0
 fi
-"${DIRECTORY}/purge-installed" $(dirname "$0") || exit 1
+sudo apt purge -y openjfx nautilus android-tools-adb android-tools-fastboot openjdk-11-jdk
 echo " "
 echo "Successfully uninstalled Mi Unlock Tool!"
 exit 0
