@@ -1,5 +1,12 @@
 #!/bin/bash
 
 sudo rm -rf ~/.local/share/applications/XiaoMiTool.desktop ~/XiaoMiToolV2 /usr/local/bin/xiaomitool
-purge_packages || exit 1
-
+echo -ne "Do you wnat to purge packages installed? [y/N]: "
+if [ -z $answer ] || [ $answer == n ] || [ $answer == N ]; then
+exit 0
+fi
+for i in {openjfx,adb,android-tools-fastboot,openjdk-11-jdk}; do
+sudo apt purge $i -y || echo 'Failed to purge $i'!;exit 1
+done
+echo Successfully Uninstalled XiaoMi Tool!
+exit 0

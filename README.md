@@ -4,8 +4,9 @@ XiaoMiTool will take care of most of the operations you would need to do, from w
 XiaoMiTool V2 can download the latest official ROMs, TWRP, root with magisk, and decide which is the best way to install them on your device.
 
 ## How To Install?
-WARNING: To install manually, please execute:
+To install manually, please execute:
 ```
 git clone https://github.com/JeromTWinL/XiaoMiTool -b master
-bash ~/XiaoMiTool/install-without-pi-apps
+cd XiaoMiTool
+bash install
 ```

@@ -1,18 +1,24 @@
 #!/bin/bash
-install_packages openjfx adb android-tools-fastboot openjdk-11-jdk || exit 1
+if [ ! -f install ] || [ ! -f README.md ]; then
+echo "ERROR: Please use this script from the cloned directory!"; exit 1
+fi
+set cur=`pwd`
 
-git_clone https://github.com/francescotescari/XiaoMiToolV2 -b linux || exit 1
+read -p "Please connect to a network, when ready, press enter to continue."
+echo "Installing Dependencies..."
+sudo apt update && sudo apt install openjfx adb android-tools-fastboot openjdk-11-jdk -y || echo "ERROR: failed to install dependencies!";exit 1
+cd ..
+echo "Cloning XiaoMiToolV2..."
+git clone https://github.com/francescotescari/XiaoMiToolV2 -b linux || echo "Failed to clone XiaoMiTool!";exit 1
 cd XiaoMiToolV2
-for i in {adb,fastboot}; do
-echo "Copying ${i}..."
-cp `which $i` ./res/tools/${i} || error "Failed to copy ${i}!"
-done
 echo "Building XiaoMi Tool..."
-case "$arch" in
-    "32") JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf ./gradlew build || error "Failed to build XiaoMiToolV2!" ;;
-    "64") JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64 ./gradlew build || error "Failed to build XiaoMiToolV2!" ;;
-    *) error "Failed to detect OS CPU architecture! Something is very wrong." ;;
+case `uname -m` in
+ armv7l|armv7) JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf ./gradlew build || echo "Failed to build XiaoMiToolV2!" && exit 1 ;;
+ aarch64) JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64 ./gradlew build || echo "Failed to build XiaoMiToolV2!" && exit 1 ;;
+ *) echo "Failed to detect OS CPU architecture! Something is very wrong." && exit 1 ;;
 esac
+cd $cur
+
 echo "Creating menu shortcut..."
 echo "[Desktop Entry]
 Name=XiaoMi Tool
@@ -21,10 +27,14 @@ Exec=JAVA_HOME=$JAVA_HOME $HOME/XiaoMiToolV2/gradlew run
 Icon=$(dirname "$0")/icon-64.png
 Terminal=false
 Type=Application
-Categories=Utilities;" > ~/.local/share/applications/XiaoMiTool.desktop || error "Failed to create menu shortcut."
+Categories=Utilities" > ~/.local/share/applications/XiaoMiTool.desktop || echo "Failed to create menu shortcut." ; exit 1
 
 echo "Creating execution script..."
 echo "#!/bin/bash
-JAVA_HOME=$JAVA_HOME $HOME/XiaoMiToolV2/gradlew run " | sudo tee /usr/local/bin/xiaomitool >/dev/null
-sudo chmod +x /usr/local/bin/xiaomitool || error "Failed to make execution script executable."
+cd $HOME/XiaoMiToolV2
+sudo $HOME/XiaoMiToolV2/gradlew run " | sudo tee /usr/local/bin/xiaomitool >/dev/null
+sudo chmod +x /usr/local/bin/xiaomitool || echo "Failed to make execution script executable.";exit 1
+
+echo "Successfully Installed XiaoMiTool!"
+exit 0
 

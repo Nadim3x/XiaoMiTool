@@ -1,7 +1,0 @@
-#!/bin/bash
-
-sudo rm -rf ~/.local/share/applications/XiaoMiTool.desktop ~/XiaoMiToolV2 /usr/local/bin/xiaomitool
-sudo apt purge openjfx adb android-tools-fastboot openjdk-11-jdk || echo Failed to purge packages!;exit 1
-
-echo Successfully Uninstalled XiaoMi Tool!
-exit 0
