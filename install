@@ -11,6 +11,11 @@ cd ..
 echo "Cloning XiaoMiToolV2..."
 git clone https://github.com/francescotescari/XiaoMiToolV2 -b linux || echo "Failed to clone XiaoMiTool!";exit 1
 cd XiaoMiToolV2
+for i in {adb,fastboot}; do
+echo "Copying $i for $(uname -m)...
+cp $(which $i) ./res/tools/$i || echo 'Failed to copy ${i}!' && exit 1
+done
+
 echo "Building XiaoMi Tool..."
 case `uname -m` in
  armv7l|armv7) JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf ./gradlew build || echo "Failed to build XiaoMiToolV2!" && exit 1 ;;
