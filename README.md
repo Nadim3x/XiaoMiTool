@@ -4,6 +4,9 @@ XiaoMiTool will take care of most of the operations you would need to do, from w
 XiaoMiTool V2 can download the latest official ROMs, TWRP, root with magisk, and decide which is the best way to install them on your device.
 
 ## How To Install?
+***WARNING: This is only for arm64/i386 linux only.***
+***For amd64 and i386, checkout branch [pc-install](../../tree/pc-install)***
+
 To install manually, please execute:
 ```
 git clone https://github.com/JeromTWinL/XiaoMiTool -b master
